@@ -1,0 +1,103 @@
+{
+  "fixture": "synthetic",
+  "leads": [
+    {
+      "id": "synthetic-stretch-confirmed",
+      "company": "Northstar Systems",
+      "role": "Junior Software Engineer",
+      "stage": "drafting",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "python_backend", "label": "Python Backend", "priority": 2},
+      "compensation": {"state": "known", "min_annual": 130000, "max_annual": 155000},
+      "created_at": 300,
+      "score": 72
+    },
+    {
+      "id": "synthetic-stretch-possible",
+      "company": "Lantern Works",
+      "role": "Applied AI Engineer I",
+      "stage": "drafting",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "applied_ai", "label": "Applied AI", "priority": 1},
+      "compensation": {"state": "known", "min_annual": 105000, "max_annual": 135000},
+      "created_at": 290,
+      "score": 81
+    },
+    {
+      "id": "synthetic-bridge",
+      "company": "Harbor Desk",
+      "role": "Application Support Engineer",
+      "stage": "drafting",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "technical_support", "label": "Technical Support", "priority": 3},
+      "compensation": {"state": "known", "min_annual": 65000, "max_annual": 85000},
+      "created_at": 280,
+      "score": 76
+    },
+    {
+      "id": "synthetic-pay-unknown",
+      "company": "Paperclip Labs",
+      "role": "AI Evaluation Engineer",
+      "stage": "drafting",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "ai_evals", "label": "AI Quality / Evals", "priority": 0},
+      "compensation": {"state": "unknown"},
+      "created_at": 500,
+      "score": 95
+    },
+    {
+      "id": "synthetic-below-bridge",
+      "company": "Cobalt Retail",
+      "role": "Help Desk Associate",
+      "stage": "drafting",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "technical_support", "label": "Technical Support", "priority": 3},
+      "compensation": {"state": "known", "min_annual": 38000, "max_annual": 49000},
+      "created_at": 490,
+      "score": 90
+    },
+    {
+      "id": "synthetic-blocked-high-pay",
+      "company": "Example Dynamics",
+      "role": "Software Engineer",
+      "stage": "drafting",
+      "blocked": true,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": false,
+      "target_lane": {"id": "python_backend", "label": "Python Backend", "priority": 2},
+      "compensation": {"state": "known", "min_annual": 180000, "max_annual": 220000},
+      "created_at": 600,
+      "score": 99
+    },
+    {
+      "id": "synthetic-already-drafted",
+      "company": "Juniper Example",
+      "role": "Automation Engineer",
+      "stage": "ready",
+      "blocked": false,
+      "eligible": true,
+      "live_ok": true,
+      "has_application": true,
+      "target_lane": {"id": "python_backend", "label": "Python Backend", "priority": 2},
+      "compensation": {"state": "known", "min_annual": 125000, "max_annual": 145000},
+      "created_at": 700,
+      "score": 88
+    }
+  ]
+}
