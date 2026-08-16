@@ -114,6 +114,24 @@ def test_new_day_resets_counter_but_preserves_owner_enablement(tmp_path):
     assert tomorrow["attempts"] == []
 
 
+def test_disabling_during_a_run_stops_before_the_next_draft(tmp_path):
+    path = tmp_path / "state.json"
+    ops.set_enabled(str(path), True, day=DAY)
+    calls = []
+
+    def disable_after_first(lead_id):
+        calls.append(lead_id)
+        ops.set_enabled(str(path), False, day=DAY)
+        return {"ok": True}
+
+    rows = [lead(f"lead-{n}", created_at=1000 - n) for n in range(3)]
+    result = ops.run_preparation(rows, disable_after_first, str(path), day=DAY)
+    assert calls == ["lead-0"]
+    assert result["enabled"] is False
+    assert result["prepared_today"] == 1
+    assert "owner disabled" in result["last_run"]["message"]
+
+
 def test_malformed_state_fails_disabled_with_warning(tmp_path):
     path = tmp_path / "state.json"
     path.write_text("not-json", encoding="utf-8")

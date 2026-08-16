@@ -353,6 +353,7 @@ def run_preparation(leads: Iterable[dict], generator: Callable[[str], dict],
             _atomic_write_json(state_path, state)
 
         results = []
+        stopped_disabled = False
         for candidate in queue:
             try:
                 result = generator(candidate["lead_id"])
@@ -378,6 +379,10 @@ def run_preparation(leads: Iterable[dict], generator: Callable[[str], dict],
                 state["last_run"]["generated"] = sum(1 for item in results if item["ok"])
                 state["last_run"]["failed"] = sum(1 for item in results if not item["ok"])
                 _atomic_write_json(state_path, state)
+                continue_enabled = state["enabled"] is True
+            if not continue_enabled:
+                stopped_disabled = True
+                break
 
         with _STATE_LOCK:
             state = load_state(state_path, day=day)
@@ -385,7 +390,9 @@ def run_preparation(leads: Iterable[dict], generator: Callable[[str], dict],
                 "status": "complete", "finished_at": time.time(),
                 "generated": sum(1 for item in results if item["ok"]),
                 "failed": sum(1 for item in results if not item["ok"]),
-                "message": ("no eligible unattempted leads" if not queue else
+                "message": ("stopped after the in-flight draft because the owner "
+                            "disabled auto-prep" if stopped_disabled else
+                            "no eligible unattempted leads" if not queue else
                             "local draft preparation finished"),
             })
             _atomic_write_json(state_path, state)
