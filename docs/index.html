@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Career Ops: a deterministic, local-first career preparation queue." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>Career Ops · Bounded automation</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg:#070a10;--panel:#101723;--line:#243145;--text:#f2f6fb;
+      --muted:#91a0b5;--mint:#68f0ba;--blue:#72a7ff;--amber:#ffc66d;
+      --red:#ff8b8b;--shadow:0 24px 80px rgba(0,0,0,.38)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:
+      radial-gradient(circle at 20% -10%,rgba(64,111,195,.25),transparent 33rem),
+      radial-gradient(circle at 90% 25%,rgba(59,210,158,.12),transparent 28rem),var(--bg);
+      color:var(--text);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+    a{color:inherit}
+    .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
+    nav{height:72px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:760;letter-spacing:-.02em}
+    .mark{display:grid;place-items:center;width:32px;height:32px;border:1px solid #406178;
+      border-radius:10px;background:linear-gradient(145deg,#182639,#0d131d);color:var(--mint)}
+    .source{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+      padding:7px 12px;border-radius:999px}.source:hover{color:var(--text);border-color:#4e698b}
+    header{padding:72px 0 64px;display:grid;grid-template-columns:1.15fr .85fr;gap:55px;align-items:center}
+    .eyebrow{color:var(--mint);font:700 12px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.13em;text-transform:uppercase}
+    h1{font-size:clamp(45px,7vw,78px);line-height:.98;letter-spacing:-.065em;margin:17px 0 24px;max-width:750px}
+    .lead{font-size:19px;color:#bac6d6;max-width:660px;margin:0 0 30px}
+    .actions{display:flex;gap:11px;flex-wrap:wrap}
+    button,.button{font:700 14px inherit;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;
+      text-decoration:none;background:var(--mint);color:#04120d;transition:.18s transform,.18s opacity}
+    button:hover,.button:hover{transform:translateY(-1px)}
+    .button.secondary{background:#151f2e;color:var(--text);border:1px solid var(--line)}
+    .terminal{background:#090d14;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+    .term-head{height:42px;background:#111824;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 14px}
+    .dot{width:9px;height:9px;border-radius:50%;background:#324157}.dot:first-child{background:#fd7979}.dot:nth-child(2){background:#f5c760}.dot:nth-child(3){background:#5bdd9e}
+    pre{margin:0;padding:20px;font:12px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;color:#b9c7da;overflow:auto}
+    .key{color:var(--blue)}.good{color:var(--mint)}.warn{color:var(--amber)}
+    section{padding:38px 0 58px}
+    .section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:22px}
+    h2{font-size:32px;line-height:1.1;letter-spacing:-.04em;margin:5px 0}
+    .section-head p{color:var(--muted);margin:0;max-width:570px}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .metric,.card{background:linear-gradient(160deg,rgba(18,27,41,.94),rgba(11,16,25,.94));border:1px solid var(--line);border-radius:16px}
+    .metric{padding:19px}.metric b{display:block;font-size:27px;letter-spacing:-.04em}.metric span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .queue{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;counter-reset:item}
+    .job{padding:20px;position:relative;opacity:0;transform:translateY(8px);transition:.35s ease}
+    .job.show{opacity:1;transform:none}
+    .rank{font:700 11px ui-monospace,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .job h3{font-size:19px;line-height:1.25;margin:10px 0 3px}.role{color:var(--muted);font-size:14px;min-height:44px}
+    .pill{display:inline-block;font:700 10px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.06em;border-radius:999px;padding:5px 8px;margin-top:16px}
+    .stretch{background:rgba(104,240,186,.12);color:var(--mint);border:1px solid rgba(104,240,186,.28)}
+    .possible{background:rgba(114,167,255,.12);color:var(--blue);border:1px solid rgba(114,167,255,.28)}
+    .bridge{background:rgba(255,198,109,.12);color:var(--amber);border:1px solid rgba(255,198,109,.28)}
+    .pay{font:700 18px ui-monospace,monospace;margin-top:12px}.why{font-size:12px;color:var(--muted);margin-top:8px}
+    .rejections{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:13px}
+    .reject{padding:14px 16px;border:1px dashed #344257;border-radius:13px;color:var(--muted);font-size:13px}
+    .reject b{color:#d2dbe8}.reject span{color:var(--red)}
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;position:relative}
+    .step{padding:17px 14px;min-height:138px}.step i{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:#182438;color:var(--blue);font:700 12px ui-monospace,monospace;font-style:normal}
+    .step h3{font-size:14px;margin:18px 0 5px}.step p{font-size:12px;color:var(--muted);margin:0}
+    .boundary{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .boundary .card{padding:23px}.boundary h3{margin:0 0 13px}.boundary ul{margin:0;padding:0;list-style:none;color:var(--muted)}
+    .boundary li{margin:8px 0;padding-left:22px;position:relative}.boundary li:before{position:absolute;left:0;color:var(--mint);content:'✓'}
+    .boundary .owner li:before{content:'●';color:var(--amber);font-size:9px;top:5px}
+    footer{border-top:1px solid var(--line);margin-top:45px;padding:27px 0 42px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:850px){header{grid-template-columns:1fr;padding-top:40px}.metrics{grid-template-columns:1fr 1fr}.queue,.rejections{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.boundary{grid-template-columns:1fr}}
+    @media(max-width:520px){.metrics,.steps{grid-template-columns:1fr}.section-head,footer{align-items:start;flex-direction:column}.wrap{width:min(100% - 24px,1120px)}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.job{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav aria-label="Primary">
+      <div class="brand"><span class="mark">C</span> Career Ops</div>
+      <a class="source" href="https://github.com/insomniac-asif/career-ops">View source ↗</a>
+    </nav>
+
+    <header>
+      <div>
+        <div class="eyebrow">Local-first · deterministic · human-authorized</div>
+        <h1>Three strong drafts. Zero blind submissions.</h1>
+        <p class="lead">A bounded job-search control plane that hard-gates evidence,
+          separates stretch and bridge income lanes, and preserves the applicant’s
+          authority over every consequential action.</p>
+        <div class="actions">
+          <button id="replay" type="button">Replay the queue</button>
+          <a class="button secondary" href="#architecture">See the contract</a>
+        </div>
+      </div>
+      <div class="terminal" aria-label="Career Ops sample output">
+        <div class="term-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <pre><span class="key">$</span> python career_ops_cli.py plan leads.json
+{
+  <span class="key">"daily_cap"</span>: <span class="good">3</span>,
+  <span class="key">"eligible_now"</span>: 3,
+  <span class="key">"selected"</span>: [
+    <span class="good">"stretch_confirmed"</span>,
+    <span class="key">"stretch_possible"</span>,
+    <span class="warn">"bridge"</span>
+  ],
+  <span class="key">"submit_application"</span>: "owner_only"
+}</pre>
+      </div>
+    </header>
+
+    <main>
+      <section aria-labelledby="proof-title">
+        <div class="section-head"><div><div class="eyebrow">Measured constraints</div><h2 id="proof-title">Volume cannot outrun judgment.</h2></div><p>The queue is small on purpose. A lead must survive hard gates before salary or score can affect its position.</p></div>
+        <div class="metrics">
+          <div class="metric"><b>3</b><span>successful drafts / day</span></div>
+          <div class="metric"><b>$120k</b><span>stretch target</span></div>
+          <div class="metric"><b>$55k</b><span>bridge floor</span></div>
+          <div class="metric"><b>0</b><span>submission capabilities</span></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="queue-title">
+        <div class="section-head"><div><div class="eyebrow">Synthetic replay</div><h2 id="queue-title">Today’s preparation queue</h2></div><p>Higher diagnostic scores cannot overrule a blocked posting, unknown pay, or a completed draft.</p></div>
+        <div class="queue" id="queue">
+          <article class="card job"><div class="rank">01 · confirmed stretch</div><h3>Northstar Systems</h3><div class="role">Junior Software Engineer</div><div class="pay">$130k–$155k</div><span class="pill stretch">minimum meets target</span><div class="why">Verified live · eligible · Python lane · explicit annual pay</div></article>
+          <article class="card job"><div class="rank">02 · possible stretch</div><h3>Lantern Works</h3><div class="role">Applied AI Engineer I</div><div class="pay">$105k–$135k</div><span class="pill possible">range can meet target</span><div class="why">Verified live · eligible · Applied AI lane · explicit annual pay</div></article>
+          <article class="card job"><div class="rank">03 · bridge</div><h3>Harbor Desk</h3><div class="role">Application Support Engineer</div><div class="pay">$65k–$85k</div><span class="pill bridge">meets bridge floor</span><div class="why">Verified live · eligible · Support lane · explicit annual pay</div></article>
+        </div>
+        <div class="rejections" aria-label="Examples excluded from automatic preparation">
+          <div class="reject"><b>Paperclip Labs</b><br><span>Held:</span> compensation unknown</div>
+          <div class="reject"><b>Cobalt Retail</b><br><span>Held:</span> maximum below bridge floor</div>
+          <div class="reject"><b>Example Dynamics</b><br><span>Held:</span> research gate blocked</div>
+        </div>
+      </section>
+
+      <section id="architecture" aria-labelledby="architecture-title">
+        <div class="section-head"><div><div class="eyebrow">Architecture</div><h2 id="architecture-title">One narrow path, five explicit stages.</h2></div><p>The reusable Python core accepts pre-researched records and a caller-supplied local draft callback. It has no network client.</p></div>
+        <div class="steps">
+          <div class="card step"><i>1</i><h3>Verify</h3><p>Require live, eligible, unblocked, not already handled.</p></div>
+          <div class="card step"><i>2</i><h3>Classify</h3><p>Use only explicit annualized compensation evidence.</p></div>
+          <div class="card step"><i>3</i><h3>Rank</h3><p>Stretch confirmed, stretch possible, then bridge.</p></div>
+          <div class="card step"><i>4</i><h3>Prepare</h3><p>Checkpoint at most three successful local receipts.</p></div>
+          <div class="card step"><i>5</i><h3>Review</h3><p>The human checks facts and submits outside the engine.</p></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="boundary-title">
+        <div class="section-head"><div><div class="eyebrow">Authority boundary</div><h2 id="boundary-title">Automation stops before consequence.</h2></div></div>
+        <div class="boundary">
+          <div class="card"><h3>Career Ops may</h3><ul><li>Rank verified lead records</li><li>Maintain a bounded local queue</li><li>Invoke a local draft callback</li><li>Write an atomic state receipt</li></ul></div>
+          <div class="card owner"><h3>Only the owner may</h3><ul><li>Confirm personal facts</li><li>Send messages</li><li>Submit applications</li><li>Spend money or trade</li></ul></div>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>Career Ops · synthetic public demonstration</span><span>Python · GitHub Actions · GitHub Pages · MIT</span></footer>
+  </div>
+  <script>
+    (function () {
+      "use strict";
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".job"));
+      function replay() {
+        cards.forEach(function (card) { card.classList.remove("show"); });
+        cards.forEach(function (card, index) {
+          window.setTimeout(function () { card.classList.add("show"); }, 180 + index * 240);
+        });
+      }
+      document.getElementById("replay").addEventListener("click", replay);
+      replay();
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test dependency
+        run: python -m pip install --upgrade pytest
+      - name: Compile
+        run: python -m py_compile career_ops.py career_ops_cli.py
+      - name: Test
+        run: pytest -q
+      - name: Deterministic demo
+        run: python career_ops_cli.py plan examples/leads.synthetic.json
